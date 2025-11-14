@@ -95,7 +95,7 @@ fun SearchByCourse(onCourseSearched: (String) -> Unit) {
 
 @Composable
 fun DropdownList(items: List<String>, onItemSelected: (String)->Unit = { }) {
-    var dropDownVisible = remember { mutableStateOf(false) }
+    val dropDownVisible = remember { mutableStateOf(false) }
     Column {
         Button( onClick =  { dropDownVisible.value = !dropDownVisible.value }) {
             Text("Please select...")
