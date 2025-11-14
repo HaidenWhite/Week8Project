@@ -11,8 +11,13 @@ import androidx.compose.ui.Alignment
 
 @Composable
 fun App() {
-    MaterialTheme {
-        var stateList = remember { mutableStateListOf<Student>() }
+    val stateList = remember { mutableStateListOf<Student>() }
+    Column {
+        AddStudent(onStudentAdded = {
+            stateList.add(it)
+        })
+
+        StudentList(stateList.toList())
     }
 }
 
@@ -26,11 +31,11 @@ fun StudentList(studentList: List<Student>) {
 }
 
 @Composable
-fun AddStudent(studentList: List<Student>) {
-    var studentId = remember { mutableStateOf("") }
-    var name = remember { mutableStateOf("") }
-    var course = remember { mutableStateOf("") }
-    var mark = remember { mutableStateOf("") }
+fun AddStudent(onStudentAdded: (Student) -> Unit) {
+    val studentId = remember { mutableStateOf("") }
+    val name = remember { mutableStateOf("") }
+    val course = remember { mutableStateOf("") }
+    val mark = remember { mutableStateOf("") }
     Column {
         TextField(value = studentId.value, onValueChange = { studentId.value = it }, label = { Text("Student ID") })
         TextField(value = name.value, onValueChange = { name.value = it }, label = { Text("Name") })
@@ -39,9 +44,9 @@ fun AddStudent(studentList: List<Student>) {
         Button(onClick = {
             val currentStudent = Undergraduate(id = studentId.value, name = name.value, course = course.value)
             currentStudent.mark = mark.value.toInt()
-            studentList.add(currentStudent)
+            onStudentAdded(currentStudent)
         }) {
             Text("Add Student")
         }
-        StudentList(studentList.toList())
+        }
 }
