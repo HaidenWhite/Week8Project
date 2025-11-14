@@ -11,10 +11,13 @@ import androidx.compose.ui.Alignment
 
 @Composable
 fun App() {
+    val university = University()
     val stateList = remember { mutableStateListOf<Student>() }
     Column {
         AddStudent(onStudentAdded = {
-            stateList.add(it)
+            university.addStudent(it)
+            stateList.clear()
+            stateList.addAll(university.studentList)
         })
 
         StudentList(stateList.toList())
@@ -48,5 +51,6 @@ fun AddStudent(onStudentAdded: (Student) -> Unit) {
         }) {
             Text("Add Student")
         }
-        }
+    }
 }
+
