@@ -20,6 +20,11 @@ fun App() {
             stateList.addAll(university.studentList)
         })
 
+        SearchByCourse(onCourseSearched = {
+            stateList.clear()
+            stateList.addAll(university.findStudentsByCourse(it))
+        })
+
         StudentList(stateList.toList())
     }
 }
@@ -54,3 +59,16 @@ fun AddStudent(onStudentAdded: (Student) -> Unit) {
     }
 }
 
+@Composable
+fun SearchByCourse(onCourseSearched: (String) -> Unit) {
+    val course = remember { mutableStateOf("") }
+    Column {
+        Text("Enter course")
+        TextField(value = course.value, onValueChange = { course.value = it })
+        Button(onClick = {
+            onCourseSearched(course.value)
+        }) {
+            Text("Search")
+        }
+    }
+}
