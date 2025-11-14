@@ -3,6 +3,8 @@ package org.example.project
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -12,12 +14,23 @@ import androidx.compose.ui.Alignment
 @Composable
 fun App() {
     val university = University()
-    val stateList = remember { mutableStateListOf<Student>() }
+
+    UniversityComposable(university)
+}
+
+@Composable
+fun UniversityComposable(university: University) {
     Column {
-        AddStudent(onStudentAdded = {
+        val stateList = remember { mutableStateListOf<Student>() }
+        val studentState = remember { mutableStateOf("") }
+        AddStudent(studentState.value, onStudentAdded = {
             university.addStudent(it)
             stateList.clear()
             stateList.addAll(university.studentList)
+        })
+
+        DropdownList(listOf("Undergraduate", "Masters"), onItemSelected = {
+            studentState.value = it
         })
 
         SearchByCourse(onCourseSearched = {
@@ -39,20 +52,27 @@ fun StudentList(studentList: List<Student>) {
 }
 
 @Composable
-fun AddStudent(onStudentAdded: (Student) -> Unit) {
+fun AddStudent(studentState: String, onStudentAdded: (Student) -> Unit) {
     val studentId = remember { mutableStateOf("") }
     val name = remember { mutableStateOf("") }
     val course = remember { mutableStateOf("") }
     val mark = remember { mutableStateOf("") }
     Column {
-        TextField(value = studentId.value, onValueChange = { studentId.value = it }, label = { Text("Student ID") })
-        TextField(value = name.value, onValueChange = { name.value = it }, label = { Text("Name") })
-        TextField(value = course.value, onValueChange = { course.value = it }, label = { Text("Course") })
-        TextField(value = mark.value, onValueChange = { mark.value = it }, label = { Text("Mark") })
+        TextField(singleLine=true, value = studentId.value, onValueChange = { studentId.value = it }, label = { Text("Student ID") })
+        TextField(singleLine=true,value = name.value, onValueChange = { name.value = it }, label = { Text("Name") })
+        TextField(singleLine=true,value = course.value, onValueChange = { course.value = it }, label = { Text("Course") })
+        TextField(singleLine=true, value = mark.value, onValueChange = { mark.value = it }, label = { Text("Mark") })
         Button(onClick = {
-            val currentStudent = Undergraduate(id = studentId.value, name = name.value, course = course.value)
-            currentStudent.mark = mark.value.toInt()
-            onStudentAdded(currentStudent)
+            if (studentState == "Masters"){
+                val currentMasters = Masters(id = studentId.value, name = name.value, course = course.value)
+                currentMasters.mark = mark.value.toInt()
+                onStudentAdded(currentMasters)
+            }
+            else {
+                val currentUndergraduate = Undergraduate(id = studentId.value, name = name.value, course = course.value)
+                currentUndergraduate.mark = mark.value.toInt()
+                onStudentAdded(currentUndergraduate)
+            }
         }) {
             Text("Add Student")
         }
@@ -69,6 +89,25 @@ fun SearchByCourse(onCourseSearched: (String) -> Unit) {
             onCourseSearched(course.value)
         }) {
             Text("Search")
+        }
+    }
+}
+
+@Composable
+fun DropdownList(items: List<String>, onItemSelected: (String)->Unit = { }) {
+    var dropDownVisible = remember { mutableStateOf(false) }
+    Column {
+        Button( onClick =  { dropDownVisible.value = !dropDownVisible.value }) {
+            Text("Please select...")
+        }
+        DropdownMenu(expanded = dropDownVisible.value, onDismissRequest = {
+            dropDownVisible.value = false
+        }) {
+            items.forEach { item ->
+                DropdownMenuItem(text = { Text(item) }, onClick = {
+                    onItemSelected(item)
+                })
+            }
         }
     }
 }
