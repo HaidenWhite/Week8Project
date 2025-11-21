@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 
 @Composable
@@ -38,12 +39,12 @@ fun UniversityComposable(university: University) {
             stateList.addAll(university.findStudentsByCourse(it))
         })
 
-        StudentList(stateList.toList())
+        StudentList(stateList)
     }
 }
 
 @Composable
-fun StudentList(studentList: List<Student>) {
+fun StudentList(studentList: SnapshotStateList<Student>) {
     Column{
         studentList.forEach {
             Text("$it")
